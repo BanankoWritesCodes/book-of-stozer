@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useCallback, useState } from 'react';
 import { useGameState } from '@/hooks/useGameState';
-import { SYMBOL_IMAGES, SYMBOL_NAMES, PAYOUTS, SYMBOLS, CONFIG, SymbolType } from '@/lib/gameConfig';
+import { SYMBOL_IMAGES, SYMBOL_NAMES, PAYOUTS, SYMBOLS, CONFIG, PAYLINES, SymbolType } from '@/lib/gameConfig';
 
 export default function SlotMachine() {
   const { 
@@ -13,26 +13,26 @@ export default function SlotMachine() {
     adjustBet, 
     spin, 
     startFreeSpins,
+    closeBonusEnd,
     startGamble,
     gamble,
-    collectGamble 
+    collectGamble,
+    toggleForceBooks
   } = useGameState();
   
   const [gambleCard, setGambleCard] = useState<'red' | 'black' | null>(null);
 
-  // Keyboard handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !state.showGamble && !state.showBonus && !state.showPaytable) {
+      if (e.code === 'Space' && !state.showGamble && !state.showBonus && !state.showPaytable && !state.showBonusEnd) {
         e.preventDefault();
         spin();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [state.showGamble, state.showBonus, state.showPaytable, spin]);
+  }, [state.showGamble, state.showBonus, state.showPaytable, state.showBonusEnd, spin]);
 
-  // Generate spinning symbols for animation
   const getSpinningSymbols = useCallback(() => {
     const symbols: SymbolType[] = [];
     for (let i = 0; i < 20; i++) {
@@ -43,10 +43,11 @@ export default function SlotMachine() {
 
   const renderReel = useCallback((reelIdx: number) => {
     const isSpinning = state.spinningReels[reelIdx];
+    const isExpanding = state.expandingReels.includes(reelIdx);
     const symbols = state.reelSymbols[reelIdx];
     
     return (
-      <div key={reelIdx} className="reel">
+      <div key={reelIdx} className={`reel ${isExpanding ? 'expanding' : ''}`}>
         <div className={`reel-inner ${isSpinning ? 'spinning' : ''}`}>
           {isSpinning ? (
             getSpinningSymbols().map((symbol, idx) => (
@@ -67,7 +68,7 @@ export default function SlotMachine() {
             symbols.map((symbol, rowIdx) => {
               const isWinning = state.winningPositions.has(`${reelIdx}-${rowIdx}`);
               return (
-                <div key={rowIdx} className={`symbol ${isWinning ? 'winning' : ''}`}>
+                <div key={rowIdx} className={`symbol ${isWinning ? 'winning' : ''} ${isExpanding ? 'expanded' : ''}`}>
                   <div className="symbol-inner">
                     <Image
                       src={SYMBOL_IMAGES[symbol]}
@@ -85,7 +86,66 @@ export default function SlotMachine() {
         </div>
       </div>
     );
-  }, [state.spinningReels, state.reelSymbols, state.winningPositions, getSpinningSymbols]);
+  }, [state.spinningReels, state.reelSymbols, state.winningPositions, state.expandingReels, getSpinningSymbols]);
+
+  const renderWinLines = () => {
+    if (state.winningLines.length === 0 || state.spinning) return null;
+
+    return (
+      <svg className="win-lines-svg">
+        {state.winningLines.map((winLine, idx) => {
+          const points = winLine.positions.map((pos) => {
+            const x = (pos.reel + 0.5) * (100 / CONFIG.REELS);
+            const y = (pos.row + 0.5) * (100 / CONFIG.ROWS);
+            return `${x}%,${y}%`;
+          }).join(' ');
+
+          return (
+            <g key={idx}>
+              <polyline
+                points={points}
+                fill="none"
+                stroke={winLine.color}
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.4"
+                className="win-line-glow"
+              />
+              <polyline
+                points={points}
+                fill="none"
+                stroke={winLine.color}
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="win-line"
+              />
+              <circle
+                cx={`${(winLine.positions[0].reel + 0.5) * (100 / CONFIG.REELS)}%`}
+                cy={`${(winLine.positions[0].row + 0.5) * (100 / CONFIG.ROWS)}%`}
+                r="12"
+                fill={winLine.color}
+                stroke="#000"
+                strokeWidth="2"
+              />
+              <text
+                x={`${(winLine.positions[0].reel + 0.5) * (100 / CONFIG.REELS)}%`}
+                y={`${(winLine.positions[0].row + 0.5) * (100 / CONFIG.ROWS)}%`}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="#000"
+                fontSize="10"
+                fontWeight="bold"
+              >
+                {winLine.lineIndex + 1}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
 
   const handleGamble = (choice: 'red' | 'black') => {
     setGambleCard(choice);
@@ -99,13 +159,23 @@ export default function SlotMachine() {
     return bet < 1 ? bet.toFixed(1) : bet.toString();
   };
 
+  // Check if in free spins mode
+  const inFreeSpins = state.freeSpinsTotal > 0;
+
   return (
-    <div className="game-container">
+    <div className={`game-container ${inFreeSpins ? 'free-spins-mode' : ''}`}>
       <div className="game-wrapper">
         {/* Top Bar */}
         <div className="top-bar">
           <div className="top-left">
             <span className="game-title-small">BOOK OF STOŽER</span>
+            <button 
+              className="hidden-test-btn"
+              onClick={toggleForceBooks}
+              title="Test: Force 3 Books"
+            >
+              {state.forceBooks ? '📗' : '📕'}
+            </button>
           </div>
           <div className="top-right">
             <button className="top-btn" onClick={() => updateState({ showPaytable: true })}>
@@ -136,6 +206,34 @@ export default function SlotMachine() {
           </div>
         </div>
 
+        {/* Free Spins Info Bar */}
+        {inFreeSpins && (
+          <div className="free-spins-info-bar">
+            <div className="fs-info-item">
+              <span className="fs-label">BESPLATNA IGRA</span>
+              <span className="fs-value">{state.freeSpinsTotal - state.freeSpins} / {state.freeSpinsTotal}</span>
+            </div>
+            <div className="fs-info-item">
+              <span className="fs-label">EXPANDING</span>
+              <div className="fs-symbol">
+                {state.expandingSymbol && (
+                  <Image 
+                    src={SYMBOL_IMAGES[state.expandingSymbol]} 
+                    alt="Expanding" 
+                    width={30} 
+                    height={30}
+                    unoptimized
+                  />
+                )}
+              </div>
+            </div>
+            <div className="fs-info-item">
+              <span className="fs-label">BONUS DOBITAK</span>
+              <span className="fs-value bonus-win">{state.freeSpinsWin.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} HRK</span>
+            </div>
+          </div>
+        )}
+
         {/* Game Area */}
         <div className="game-area">
           {/* Left Payline Numbers */}
@@ -144,7 +242,7 @@ export default function SlotMachine() {
               <div
                 key={num}
                 className={`payline-num c${num} ${num > state.lines ? 'inactive' : ''}`}
-                onClick={() => updateState({ lines: num })}
+                onClick={() => !inFreeSpins && updateState({ lines: num })}
               >
                 {num}
               </div>
@@ -155,11 +253,12 @@ export default function SlotMachine() {
           <div className="reels-frame">
             <div className="reels-container">
               {Array.from({ length: CONFIG.REELS }, (_, i) => renderReel(i))}
+              {renderWinLines()}
             </div>
 
-            {state.freeSpins > 0 && !state.spinning && (
+            {state.freeSpins > 0 && !state.spinning && !state.expandingAnimation && (
               <div className="free-spins-banner active">
-                <div className="free-spins-text">BESPLATNE IGRE: {state.freeSpins}</div>
+                <div className="free-spins-text">PREOSTALO: {state.freeSpins} IGARA</div>
               </div>
             )}
           </div>
@@ -170,7 +269,7 @@ export default function SlotMachine() {
               <div
                 key={num}
                 className={`payline-num c${num} ${num > state.lines ? 'inactive' : ''}`}
-                onClick={() => updateState({ lines: num })}
+                onClick={() => !inFreeSpins && updateState({ lines: num })}
               >
                 {num}
               </div>
@@ -196,18 +295,18 @@ export default function SlotMachine() {
             <div className="adjuster-group">
               <span className="adjuster-label">Linije</span>
               <div className="adjuster">
-                <button className="adj-btn" onClick={() => adjustLines(-1)}>−</button>
+                <button className="adj-btn" onClick={() => adjustLines(-1)} disabled={inFreeSpins}>−</button>
                 <span className="adj-value">{state.lines}</span>
-                <button className="adj-btn" onClick={() => adjustLines(1)}>+</button>
+                <button className="adj-btn" onClick={() => adjustLines(1)} disabled={inFreeSpins}>+</button>
               </div>
             </div>
 
             <div className="adjuster-group">
               <span className="adjuster-label">Ulog/Linija</span>
               <div className="adjuster">
-                <button className="adj-btn" onClick={() => adjustBet(-1)}>−</button>
+                <button className="adj-btn" onClick={() => adjustBet(-1)} disabled={inFreeSpins}>−</button>
                 <span className="adj-value">{formatBet(state.bet)}</span>
-                <button className="adj-btn" onClick={() => adjustBet(1)}>+</button>
+                <button className="adj-btn" onClick={() => adjustBet(1)} disabled={inFreeSpins}>+</button>
               </div>
             </div>
 
@@ -219,15 +318,16 @@ export default function SlotMachine() {
             <button 
               className="silver-btn" 
               onClick={startGamble}
-              disabled={state.lastWin === 0 || state.spinning}
+              disabled={state.lastWin === 0 || state.spinning || inFreeSpins}
             >
               Gamble
             </button>
             <button 
               className="silver-btn start" 
               onClick={spin}
+              disabled={state.expandingAnimation}
             >
-              {state.spinning ? 'STOP' : 'START'}
+              {state.spinning ? 'STOP' : inFreeSpins ? 'SPIN' : 'START'}
             </button>
           </div>
         </div>
@@ -237,34 +337,66 @@ export default function SlotMachine() {
         </div>
       </div>
 
-      {/* Bonus Overlay */}
+      {/* Bonus Start Overlay - Custom Design */}
       {state.showBonus && (
         <div className="overlay active">
-          <div className="bonus-content">
-            <h2 className="bonus-title">BESPLATNE IGRE!</h2>
-            <div className="bonus-books">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bonus-book">
-                  <Image src={SYMBOL_IMAGES['BOOK']} alt="Book" width={100} height={100} unoptimized />
+          <div className="bonus-screen">
+            <div className="bonus-screen-inner">
+              <div className="bonus-header">
+                <span className="bonus-games-text">10 Free Games</span>
+              </div>
+              
+              <div className="bonus-book-display">
+                <div className="bonus-book-frame">
+                  <div className="bonus-book-left">
+                    <Image 
+                      src={SYMBOL_IMAGES[state.expandingSymbol || 'BOOK']} 
+                      alt="Symbol" 
+                      width={100} 
+                      height={100}
+                      unoptimized
+                    />
+                  </div>
+                  <div className="bonus-book-right">
+                    <div className="eye-of-ra">👁</div>
+                  </div>
                 </div>
-              ))}
+              </div>
+              
+              <div className="bonus-expanding-text">
+                <span>Special Expanding Symbol</span>
+              </div>
+              
+              <div className="bonus-symbol-name">
+                {state.expandingSymbol && SYMBOL_NAMES[state.expandingSymbol]}
+              </div>
+              
+              <button className="bonus-start-btn" onClick={startFreeSpins}>
+                ZAPOČNI BESPLATNE IGRE
+              </button>
             </div>
-            <p className="bonus-info">10 BESPLATNIH IGARA!</p>
-            <p className="bonus-symbol-display">Expanding simbol:</p>
-            {state.expandingSymbol && (
-              <>
-                <Image 
-                  src={SYMBOL_IMAGES[state.expandingSymbol]} 
-                  alt="Expanding" 
-                  width={120} 
-                  height={120}
-                  className="bonus-symbol-img"
-                  unoptimized
-                />
-                <p className="bonus-symbol-name">{SYMBOL_NAMES[state.expandingSymbol]}</p>
-              </>
-            )}
-            <button className="bonus-btn" onClick={startFreeSpins}>ZAPOČNI</button>
+          </div>
+        </div>
+      )}
+
+      {/* Bonus End Overlay */}
+      {state.showBonusEnd && (
+        <div className="overlay active">
+          <div className="bonus-end-screen">
+            <h2 className="bonus-end-title">BESPLATNE IGRE ZAVRŠENE!</h2>
+            <div className="bonus-end-stats">
+              <div className="bonus-stat">
+                <span className="stat-label">Odigrano igara:</span>
+                <span className="stat-value">{state.freeSpinsTotal}</span>
+              </div>
+              <div className="bonus-stat total">
+                <span className="stat-label">Ukupni dobitak:</span>
+                <span className="stat-value">{state.freeSpinsWin.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} HRK</span>
+              </div>
+            </div>
+            <button className="bonus-end-btn" onClick={closeBonusEnd}>
+              NASTAVI
+            </button>
           </div>
         </div>
       )}

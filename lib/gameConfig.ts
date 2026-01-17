@@ -15,16 +15,18 @@ export const SYMBOL_IMAGES: Record<SymbolType, string> = {
   '10': '/symbols/ten.jpg'
 };
 
-// Adjusted weights for ~90% RTP - lower value symbols more common
 export const SYMBOL_WEIGHTS: number[] = [2, 3, 4, 6, 6, 20, 20, 25, 25, 28];
 
-// Payouts based on original Book of Ra paytable - now with 6 of a kind
+// Premium symbols (HAT, PHARAOH) pay for 2+ matches
+export const PREMIUM_SYMBOLS: SymbolType[] = ['HAT', 'PHARAOH'];
+
+// Payouts - premium symbols have 2-match payouts
 export const PAYOUTS: Record<SymbolType, Record<number, number>> = {
   'BOOK': { 6: 50000, 5: 18000, 4: 1800, 3: 180, 2: 0 },
-  'HAT': { 6: 15000, 5: 5000, 4: 1000, 3: 100, 2: 10 },
-  'PHARAOH': { 6: 6000, 5: 2000, 4: 400, 3: 30, 2: 5 },
-  'EXPLORER1': { 6: 2500, 5: 750, 4: 100, 3: 30, 2: 0 },  // Kezro
-  'EXPLORER2': { 6: 2500, 5: 750, 4: 100, 3: 30, 2: 0 },  // Grossadmiral
+  'HAT': { 6: 15000, 5: 5000, 4: 1000, 3: 100, 2: 10 },      // Premium - pays for 2
+  'PHARAOH': { 6: 6000, 5: 2000, 4: 400, 3: 30, 2: 5 },      // Premium - pays for 2
+  'EXPLORER1': { 6: 2500, 5: 750, 4: 100, 3: 30, 2: 0 },
+  'EXPLORER2': { 6: 2500, 5: 750, 4: 100, 3: 30, 2: 0 },
   'A': { 6: 500, 5: 150, 4: 40, 3: 10, 2: 0 },
   'K': { 6: 500, 5: 150, 4: 40, 3: 10, 2: 0 },
   'Q': { 6: 300, 5: 100, 4: 25, 3: 5, 2: 0 },
@@ -32,13 +34,12 @@ export const PAYOUTS: Record<SymbolType, Record<number, number>> = {
   '10': { 6: 300, 5: 100, 4: 25, 3: 5, 2: 0 }
 };
 
-// Symbol names - EXPLORER1 = Kezro (plavokosi), EXPLORER2 = Grossadmiral (tamnokosi)
 export const SYMBOL_NAMES: Record<SymbolType, string> = {
   'BOOK': 'BOOK OF STOŽER',
   'HAT': 'Koba the Explorer',
   'PHARAOH': 'Flegma',
-  'EXPLORER1': 'Kezro',        // Plavokosi istraživač
-  'EXPLORER2': 'Grossadmiral', // Tamnokosi vodič
+  'EXPLORER1': 'Kezro',
+  'EXPLORER2': 'Grossadmiral',
   'A': 'Kec',
   'K': 'Kralj',
   'Q': 'Renata',
@@ -46,21 +47,20 @@ export const SYMBOL_NAMES: Record<SymbolType, string> = {
   '10': 'Ceki'
 };
 
-// Paylines adjusted for 6 reels
-export const PAYLINES: number[][] = [
-  [1, 1, 1, 1, 1, 1], // Line 1 - Middle
-  [0, 0, 0, 0, 0, 0], // Line 2 - Top
-  [2, 2, 2, 2, 2, 2], // Line 3 - Bottom
-  [0, 1, 2, 2, 1, 0], // Line 4 - V shape extended
-  [2, 1, 0, 0, 1, 2], // Line 5 - Inverted V extended
-  [0, 0, 1, 1, 2, 2], // Line 6 - Diagonal down
-  [2, 2, 1, 1, 0, 0], // Line 7 - Diagonal up
-  [1, 0, 0, 0, 0, 1], // Line 8 - Top valley extended
-  [1, 2, 2, 2, 2, 1], // Line 9 - Bottom valley extended
-  [0, 1, 1, 1, 1, 0]  // Line 10 - Middle bump extended
+// Paylines for 6 reels with colors
+export const PAYLINES: { pattern: number[]; color: string }[] = [
+  { pattern: [1, 1, 1, 1, 1, 1], color: '#ffeb3b' },  // Line 1 - Yellow - Middle
+  { pattern: [0, 0, 0, 0, 0, 0], color: '#f44336' },  // Line 2 - Red - Top
+  { pattern: [2, 2, 2, 2, 2, 2], color: '#2196f3' },  // Line 3 - Blue - Bottom
+  { pattern: [0, 1, 2, 2, 1, 0], color: '#4caf50' },  // Line 4 - Green - V shape
+  { pattern: [2, 1, 0, 0, 1, 2], color: '#9c27b0' },  // Line 5 - Purple - Inverted V
+  { pattern: [0, 0, 1, 1, 2, 2], color: '#ff9800' },  // Line 6 - Orange - Diagonal down
+  { pattern: [2, 2, 1, 1, 0, 0], color: '#e91e63' },  // Line 7 - Pink - Diagonal up
+  { pattern: [1, 0, 0, 0, 0, 1], color: '#00bcd4' },  // Line 8 - Cyan - Top valley
+  { pattern: [1, 2, 2, 2, 2, 1], color: '#8bc34a' },  // Line 9 - Light green - Bottom valley
+  { pattern: [0, 1, 1, 1, 1, 0], color: '#795548' }   // Line 10 - Brown - Middle bump
 ];
 
-// Updated bet values - starting from 0.1 per line (1 HRK total with 10 lines)
 export const BET_VALUES: number[] = [0.1, 0.2, 0.4, 0.5, 1, 2, 4, 5, 10, 20, 40, 100];
 
 export const CONFIG = {
