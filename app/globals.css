@@ -1180,49 +1180,45 @@ body {
     max-width: 100%;
   }
   
-  .top-bar { padding: 6px 10px; }
-  .top-btn { padding: 5px 10px; font-size: 0.7rem; }
-  .game-title-small { font-size: 0.7rem; }
+  .top-bar { padding: 4px 8px; }
+  .top-btn { padding: 4px 8px; font-size: 0.65rem; }
+  .game-title-small { font-size: 0.65rem; }
   
-  .logo-area { height: 60px; min-height: 60px; }
-  .logo-text { font-size: 1.4rem; letter-spacing: 2px; }
-  .logo-sub { font-size: 0.55rem; letter-spacing: 5px; }
-  .logo-frame { padding: 4px 20px; }
+  .logo-area { height: 45px; min-height: 45px; }
+  .logo-text { font-size: 1.2rem; letter-spacing: 1px; }
+  .logo-sub { font-size: 0.5rem; letter-spacing: 4px; }
+  .logo-frame { padding: 3px 15px; }
+  
+  .free-spins-info-bar {
+    padding: 4px 10px;
+    margin: 0 5px;
+  }
+  .fs-label { font-size: 0.5rem; }
+  .fs-value { font-size: 0.85rem; }
+  .fs-symbol { width: 24px; height: 24px; }
   
   .game-area {
     flex-direction: row;
+    border-width: 2px;
   }
   
   .payline-numbers { 
-    min-width: 28px; 
-    padding: 5px 3px;
+    min-width: 20px; 
+    padding: 2px 1px;
     flex-direction: column;
     justify-content: space-around;
   }
-  .payline-num { width: 22px; height: 22px; font-size: 0.65rem; }
+  .payline-num { width: 18px; height: 18px; font-size: 0.55rem; border-radius: 3px; }
   
   .reels-frame {
     flex: 1;
-    min-height: 200px;
+    min-height: 180px;
   }
   
   .reels-container { 
-    padding: 8px; 
+    padding: 4px; 
     gap: 2px;
     grid-template-columns: repeat(6, 1fr) !important;
-    grid-template-rows: 1fr !important;
-  }
-  
-  .reel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .reel-inner {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
   }
   
   .symbol {
@@ -1231,168 +1227,200 @@ body {
   }
   
   .symbol-inner { 
-    max-width: 65px; 
-    max-height: 65px; 
-    width: 85%;
-    height: 85%;
+    max-width: 80px; 
+    max-height: 80px; 
+    width: 92%;
+    height: 92%;
     border-width: 2px; 
-    border-radius: 6px;
+    border-radius: 5px;
   }
   
-  .message-bar { margin: 5px 15px; padding: 5px 12px; }
-  .message-text { font-size: 0.8rem; }
+  .message-bar { margin: 3px 10px; padding: 4px 10px; }
+  .message-text { font-size: 0.75rem; }
   
-  .bottom-controls { padding: 8px; }
+  .bottom-controls { padding: 5px 4px; }
   .controls-row { 
-    gap: 5px; 
+    gap: 4px; 
     flex-wrap: wrap; 
     justify-content: center;
   }
   
-  .control-box { min-width: 75px; padding: 4px 6px; }
-  .control-label { font-size: 0.5rem; }
-  .control-value { font-size: 0.85rem; }
+  .control-box { min-width: 65px; padding: 3px 5px; }
+  .control-label { font-size: 0.45rem; }
+  .control-value { font-size: 0.8rem; }
   
-  .adjuster-group { }
-  .adjuster-label { font-size: 0.5rem; }
-  .adjuster { gap: 3px; }
-  .adj-btn { width: 26px; height: 26px; font-size: 1rem; }
-  .adj-value { padding: 3px 6px; font-size: 0.8rem; min-width: 35px; }
+  .adjuster-label { font-size: 0.45rem; }
+  .adjuster { gap: 2px; }
+  .adj-btn { width: 24px; height: 24px; font-size: 0.9rem; }
+  .adj-value { padding: 2px 5px; font-size: 0.75rem; min-width: 30px; }
   
-  .silver-btn { padding: 6px 12px; font-size: 0.7rem; min-width: 65px; }
+  .silver-btn { padding: 5px 10px; font-size: 0.65rem; min-width: 55px; }
   
-  .disclaimer { font-size: 0.5rem; padding: 4px; }
+  .disclaimer { font-size: 0.45rem; padding: 3px; }
+  
+  .free-spins-banner { padding: 6px 12px; }
+  .free-spins-text { font-size: 0.75rem; }
   
   .paytable-grid { grid-template-columns: 1fr; }
   .paytable-sym img { width: 60px; height: 60px; }
   .paytable-sym { min-width: 60px; }
   
-  .bonus-title { font-size: 1.8rem; }
-  .bonus-book { width: 60px; height: 60px; }
-  .bonus-info { font-size: 1rem; }
-  .bonus-btn { padding: 10px 30px; font-size: 0.9rem; }
+  .bonus-screen { max-width: 90%; }
+  .bonus-games-text { font-size: 1.5rem; }
+  .bonus-book-left img { width: 60px; height: 60px; }
+  .bonus-expanding-text { font-size: 1rem; }
+  .bonus-symbol-name { font-size: 1.2rem; }
+  .bonus-start-btn { padding: 10px 25px; font-size: 0.9rem; }
   
-  .gamble-title { font-size: 1.6rem; }
-  .gamble-amount { font-size: 1.2rem; }
-  .gamble-cards { gap: 15px; margin: 20px 0; }
-  .gamble-card { width: 80px; height: 110px; }
-  .gamble-card-back { width: 80px; height: 110px; }
-  .card-suit { font-size: 1.6rem; }
-  .card-label { font-size: 0.65rem; margin-top: 8px; }
-  .collect-btn { padding: 10px 20px; font-size: 0.85rem; }
+  .bonus-end-screen { padding: 20px; }
+  .bonus-end-title { font-size: 1.4rem; }
+  .bonus-stat { padding: 8px 15px; }
+  .stat-label { font-size: 0.85rem; }
+  .stat-value { font-size: 1rem; }
+  .bonus-end-btn { padding: 10px 30px; font-size: 0.9rem; }
+  
+  .gamble-title { font-size: 1.4rem; }
+  .gamble-amount { font-size: 1.1rem; }
+  .gamble-cards { gap: 12px; margin: 15px 0; }
+  .gamble-card { width: 70px; height: 100px; }
+  .gamble-card-back { width: 70px; height: 100px; }
+  .card-suit { font-size: 1.5rem; }
+  .card-label { font-size: 0.6rem; margin-top: 6px; }
+  .collect-btn { padding: 10px 20px; font-size: 0.85rem; margin-top: 15px; }
   
   .win-lines-svg {
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
   }
+  .win-lines-svg circle { r: 10; }
+  .win-lines-svg text { font-size: 8px; }
 }
 
 /* Small phones */
 @media (max-width: 500px) {
-  .top-bar { padding: 4px 8px; }
-  .top-btn { padding: 4px 8px; font-size: 0.6rem; }
-  .game-title-small { font-size: 0.6rem; }
-  .hidden-test-btn { font-size: 0.7rem; margin-left: 5px; }
+  .top-bar { padding: 3px 6px; }
+  .top-btn { padding: 3px 6px; font-size: 0.55rem; }
+  .game-title-small { font-size: 0.55rem; }
+  .hidden-test-btn { font-size: 0.6rem; margin-left: 4px; }
   
-  .logo-area { height: 50px; min-height: 50px; }
-  .logo-text { font-size: 1.1rem; letter-spacing: 1px; }
-  .logo-sub { font-size: 0.45rem; letter-spacing: 3px; }
-  .logo-frame { padding: 3px 12px; border-width: 2px; }
+  .logo-area { height: 40px; min-height: 40px; }
+  .logo-text { font-size: 1rem; letter-spacing: 0.5px; }
+  .logo-sub { font-size: 0.4rem; letter-spacing: 2px; }
+  .logo-frame { padding: 2px 10px; border-width: 2px; }
   
-  .pyramids { height: 35px; }
-  .pyramid-1 { border-width: 0 20px 18px 20px; }
-  .pyramid-2 { border-width: 0 35px 30px 35px; }
-  .pyramid-3 { border-width: 0 28px 24px 28px; }
-  .pyramid-4 { border-width: 0 22px 20px 22px; }
+  .pyramids { height: 28px; }
+  .pyramid-1 { border-width: 0 16px 14px 16px; }
+  .pyramid-2 { border-width: 0 28px 24px 28px; }
+  .pyramid-3 { border-width: 0 22px 19px 22px; }
+  .pyramid-4 { border-width: 0 18px 16px 18px; }
+  
+  .free-spins-info-bar {
+    padding: 3px 8px;
+    margin: 0 3px;
+  }
+  .fs-label { font-size: 0.4rem; }
+  .fs-value { font-size: 0.75rem; }
+  .fs-symbol { width: 20px; height: 20px; border-width: 1px; }
   
   .game-area { border-width: 2px; }
   
-  .payline-numbers { min-width: 22px; padding: 3px 2px; }
-  .payline-num { width: 18px; height: 18px; font-size: 0.55rem; border-radius: 3px; }
+  .payline-numbers { min-width: 18px; padding: 2px 1px; }
+  .payline-num { width: 16px; height: 16px; font-size: 0.5rem; border-radius: 2px; }
   
-  .reels-container { padding: 5px; gap: 2px; }
+  .reels-container { padding: 3px; gap: 1px; }
   .symbol-inner { 
-    max-width: 48px; 
-    max-height: 48px; 
+    max-width: 55px; 
+    max-height: 55px;
+    width: 95%;
+    height: 95%;
     border-width: 1px; 
-    border-radius: 4px; 
+    border-radius: 3px; 
   }
   
-  .message-bar { margin: 3px 8px; padding: 4px 8px; border-radius: 12px; border-width: 1px; }
-  .message-text { font-size: 0.65rem; }
+  .message-bar { margin: 2px 6px; padding: 3px 6px; border-radius: 10px; border-width: 1px; }
+  .message-text { font-size: 0.6rem; }
   
-  .bottom-controls { padding: 5px 4px; border-width: 1px; }
+  .bottom-controls { padding: 4px 3px; border-width: 1px; }
   .controls-row { gap: 3px; }
   
-  .control-box { min-width: 58px; padding: 3px 4px; border-width: 1px; border-radius: 4px; }
-  .control-label { font-size: 0.4rem; letter-spacing: 0.5px; }
-  .control-value { font-size: 0.7rem; }
+  .control-box { min-width: 52px; padding: 2px 3px; border-width: 1px; border-radius: 3px; }
+  .control-label { font-size: 0.35rem; letter-spacing: 0.3px; }
+  .control-value { font-size: 0.65rem; }
   
-  .adjuster-label { font-size: 0.4rem; }
-  .adjuster { gap: 2px; }
-  .adj-btn { width: 22px; height: 22px; font-size: 0.85rem; border-width: 1px; }
-  .adj-value { padding: 2px 4px; font-size: 0.65rem; min-width: 28px; border-width: 1px; }
+  .adjuster-label { font-size: 0.35rem; }
+  .adjuster { gap: 1px; }
+  .adj-btn { width: 20px; height: 20px; font-size: 0.8rem; border-width: 1px; }
+  .adj-value { padding: 1px 3px; font-size: 0.6rem; min-width: 24px; border-width: 1px; }
   
   .silver-btn { 
-    padding: 5px 8px; 
-    font-size: 0.55rem; 
-    min-width: 50px; 
+    padding: 4px 6px; 
+    font-size: 0.5rem; 
+    min-width: 45px; 
     border-width: 1px;
-    border-radius: 4px;
+    border-radius: 3px;
   }
   
-  .disclaimer { font-size: 0.4rem; padding: 3px; }
+  .disclaimer { font-size: 0.35rem; padding: 2px; }
   
-  .free-spins-banner { padding: 8px 15px; border-width: 2px; }
-  .free-spins-text { font-size: 0.8rem; }
+  .free-spins-banner { padding: 5px 10px; border-width: 1px; }
+  .free-spins-text { font-size: 0.65rem; }
   
-  .bonus-content { padding: 15px; }
-  .bonus-title { font-size: 1.4rem; margin-bottom: 10px; }
-  .bonus-books { gap: 10px; margin: 10px 0; }
-  .bonus-book { width: 50px; height: 50px; }
-  .bonus-info { font-size: 0.9rem; margin: 8px 0; }
-  .bonus-symbol-display { font-size: 0.85rem; margin-top: 10px; }
-  .bonus-symbol-img { width: 70px !important; height: 70px !important; }
-  .bonus-symbol-name { font-size: 1rem; margin-top: 5px; }
-  .bonus-btn { padding: 8px 25px; font-size: 0.8rem; margin-top: 15px; }
+  .bonus-screen { max-width: 95%; }
+  .bonus-screen-inner { padding: 15px; }
+  .bonus-games-text { font-size: 1.3rem; }
+  .bonus-book-frame { padding: 10px; }
+  .bonus-book-left { padding: 6px; }
+  .bonus-book-left img { width: 50px; height: 50px; }
+  .eye-of-ra { font-size: 2rem; }
+  .bonus-expanding-text { font-size: 0.9rem; margin: 10px 0; }
+  .bonus-symbol-name { font-size: 1rem; margin-bottom: 15px; }
+  .bonus-start-btn { padding: 8px 20px; font-size: 0.8rem; }
   
-  .gamble-content { padding: 15px; }
-  .gamble-title { font-size: 1.4rem; margin-bottom: 8px; }
-  .gamble-amount { font-size: 1.1rem; margin: 8px 0; }
-  .gamble-potential { font-size: 0.9rem; margin-bottom: 15px; }
-  .gamble-cards { gap: 12px; margin: 20px 0; }
-  .gamble-card { width: 65px; height: 95px; border-width: 2px; border-radius: 8px; }
-  .gamble-card-back { width: 65px; height: 95px; border-width: 2px; border-radius: 8px; }
-  .gamble-card-back span { font-size: 2.5rem; }
-  .card-inner { gap: 8px; }
-  .card-suit { font-size: 1.4rem; }
-  .card-label { font-size: 0.55rem; margin-top: 6px; }
-  .collect-btn { padding: 8px 18px; font-size: 0.75rem; border-width: 2px; margin-top: 15px; }
+  .bonus-end-screen { padding: 15px 20px; }
+  .bonus-end-title { font-size: 1.2rem; margin-bottom: 15px; }
+  .bonus-stat { padding: 6px 12px; margin: 6px 0; }
+  .stat-label { font-size: 0.75rem; }
+  .stat-value { font-size: 0.9rem; }
+  .bonus-stat.total .stat-value { font-size: 1.1rem; }
+  .bonus-end-btn { padding: 8px 25px; font-size: 0.8rem; margin-top: 15px; }
   
-  .paytable-content { padding: 12px; border-radius: 10px; }
-  .paytable-title { font-size: 1.2rem; margin-bottom: 3px; }
-  .paytable-subtitle { font-size: 0.7rem; margin-bottom: 10px; }
-  .paytable-grid { gap: 8px; }
-  .paytable-item { padding: 8px; gap: 10px; }
-  .paytable-sym { min-width: 50px; }
-  .paytable-sym img { width: 50px; height: 50px; }
-  .paytable-vals { font-size: 0.6rem; line-height: 1.4; }
-  .paytable-vals strong { font-size: 0.7rem; margin-bottom: 2px; }
-  .paytable-close { padding: 8px 25px; font-size: 0.8rem; margin-top: 10px; }
+  .gamble-content { padding: 12px; }
+  .gamble-title { font-size: 1.2rem; margin-bottom: 6px; }
+  .gamble-amount { font-size: 1rem; margin: 6px 0; }
+  .gamble-potential { font-size: 0.8rem; margin-bottom: 10px; }
+  .gamble-cards { gap: 10px; margin: 15px 0; }
+  .gamble-card { width: 55px; height: 80px; border-width: 2px; border-radius: 6px; }
+  .gamble-card-back { width: 55px; height: 80px; border-width: 2px; border-radius: 6px; }
+  .gamble-card-back span { font-size: 2rem; }
+  .card-inner { gap: 5px; }
+  .card-suit { font-size: 1.2rem; }
+  .card-label { font-size: 0.5rem; margin-top: 5px; }
+  .collect-btn { padding: 6px 15px; font-size: 0.7rem; border-width: 2px; margin-top: 12px; }
+  
+  .paytable-content { padding: 10px; border-radius: 8px; }
+  .paytable-title { font-size: 1rem; margin-bottom: 2px; }
+  .paytable-subtitle { font-size: 0.6rem; margin-bottom: 8px; }
+  .paytable-grid { gap: 6px; }
+  .paytable-item { padding: 6px; gap: 8px; }
+  .paytable-sym { min-width: 45px; }
+  .paytable-sym img { width: 45px; height: 45px; }
+  .paytable-vals { font-size: 0.55rem; line-height: 1.3; }
+  .paytable-vals strong { font-size: 0.65rem; margin-bottom: 1px; }
+  .paytable-close { padding: 6px 20px; font-size: 0.7rem; margin-top: 8px; }
   
   .win-lines-svg {
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
   }
   
-  .win-lines-svg circle { r: 8; }
-  .win-lines-svg text { font-size: 7px; }
-  .win-line { stroke-width: 3; }
-  .win-line-glow { stroke-width: 6; }
+  .win-lines-svg circle { r: 7; }
+  .win-lines-svg text { font-size: 6px; }
+  .win-line { stroke-width: 2; }
+  .win-line-glow { stroke-width: 4; }
 }
 
 /* Landscape mobile */

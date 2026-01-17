@@ -48,6 +48,7 @@ export interface GameState {
   forceBooks: boolean;
   expandingAnimation: boolean;
   expandingReels: number[];
+  bonusWinInfo: string;
 }
 
 const getRandomSymbol = (excludeSymbols: SymbolType[] = []): SymbolType => {
@@ -81,7 +82,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // Calculate minimum match count based on symbol type
 const getMinMatch = (symbol: SymbolType): number => {
   if (PREMIUM_SYMBOLS.includes(symbol)) {
-    return 2; // HAT, PHARAOH pay for 2+
+    return 2; // HAT (Koba), PHARAOH (Flegma) pay for 2+
   }
   return 3; // All other symbols need 3+
 };
@@ -112,7 +113,8 @@ export function useGameState() {
     fastSpin: false,
     forceBooks: false,
     expandingAnimation: false,
-    expandingReels: []
+    expandingReels: [],
+    bonusWinInfo: ''
   });
 
   const audioRef = useRef<{ [key: string]: HTMLAudioElement }>({});
@@ -190,8 +192,8 @@ export function useGameState() {
     }
   }, [state.spinning]);
 
-  // Calculate wins from final symbols
-  const calculateWins = useCallback((symbols: SymbolType[][], lines: number, bet: number): { 
+  // Normal game win calculation (by paylines)
+  const calculateNormalWins = useCallback((symbols: SymbolType[][], lines: number, bet: number): { 
     winningLines: WinLine[]; 
     winningPositions: Set<string>; 
     totalWin: number 
@@ -203,7 +205,7 @@ export function useGameState() {
       const line = PAYLINES[l];
       const syms = line.pattern.map((row, col) => symbols[col][row]);
       
-      // Find the first non-BOOK symbol (BOOK is wild)
+      // Find first non-BOOK symbol
       let first = syms[0];
       if (first === 'BOOK') {
         for (let i = 1; i < syms.length; i++) {
@@ -227,7 +229,6 @@ export function useGameState() {
         }
       }
 
-      // Check if win qualifies
       const payout = PAYOUTS[first];
       const minMatch = getMinMatch(first);
       
@@ -244,10 +245,59 @@ export function useGameState() {
       }
     }
 
-    // Calculate total win: sum of (payout * bet) for each winning line
     const totalWin = winningLines.reduce((t, w) => t + (w.payout * bet), 0);
-
     return { winningLines, winningPositions, totalWin };
+  }, []);
+
+  // BONUS GAME win calculation - expanding symbol fills columns
+  const calculateBonusWins = useCallback((
+    symbols: SymbolType[][], 
+    expandingSymbol: SymbolType,
+    lines: number,
+    bet: number
+  ): { 
+    expandedReels: number[];
+    winningPositions: Set<string>; 
+    totalWin: number;
+    expandedCount: number;
+    winInfo: string;
+  } => {
+    // Find which reels have the expanding symbol OR BOOK (wild)
+    const expandedReels: number[] = [];
+    
+    symbols.forEach((col, reelIdx) => {
+      const hasExpandingSymbol = col.some(s => s === expandingSymbol || s === 'BOOK');
+      if (hasExpandingSymbol) {
+        expandedReels.push(reelIdx);
+      }
+    });
+
+    const expandedCount = expandedReels.length;
+    const winningPositions = new Set<string>();
+    let totalWin = 0;
+    let winInfo = '';
+
+    // Check if we have enough for a win
+    const minMatch = getMinMatch(expandingSymbol);
+    
+    if (expandedCount >= minMatch) {
+      // Mark all positions in expanded reels as winning
+      expandedReels.forEach(reelIdx => {
+        for (let row = 0; row < CONFIG.ROWS; row++) {
+          winningPositions.add(`${reelIdx}-${row}`);
+        }
+      });
+
+      // Get payout for this many matches
+      const payout = PAYOUTS[expandingSymbol];
+      if (payout && payout[expandedCount]) {
+        // Win = payout × number of lines × bet
+        totalWin = payout[expandedCount] * lines * bet;
+        winInfo = `${expandedCount}× ${expandingSymbol} = ${payout[expandedCount]} × ${lines} linija × ${bet} = ${totalWin.toFixed(2)} HRK`;
+      }
+    }
+
+    return { expandedReels, winningPositions, totalWin, expandedCount, winInfo };
   }, []);
 
   const spin = useCallback(async () => {
@@ -288,7 +338,8 @@ export function useGameState() {
       spinningReels: Array(CONFIG.REELS).fill(true),
       fastSpin: false,
       expandingAnimation: false,
-      expandingReels: []
+      expandingReels: [],
+      bonusWinInfo: ''
     });
 
     let newSymbols = generateReels();
@@ -352,19 +403,25 @@ export function useGameState() {
 
     await delay(100);
 
-    let finalSymbols = [...currentSpinSymbolsRef.current!.map(col => [...col])];
-    
-    // During free spins - check for expanding symbol and animate
-    if (state.expandingSymbol && isInFreeSpins) {
-      const reelsWithExpandingSymbol: number[] = [];
-      
-      finalSymbols.forEach((col, reelIdx) => {
-        if (col.some(s => s === state.expandingSymbol || s === 'BOOK')) {
-          reelsWithExpandingSymbol.push(reelIdx);
-        }
-      });
-      
-      if (reelsWithExpandingSymbol.length > 0) {
+    let finalSymbols = currentSpinSymbolsRef.current!.map(col => [...col]);
+    let totalWin = 0;
+    let winningPositions = new Set<string>();
+    let winningLines: WinLine[] = [];
+    let finalMessage = message;
+    let newFreeSpinsWin = state.freeSpinsWin;
+    let bonusWinInfo = '';
+
+    // ============ BONUS GAME LOGIC ============
+    if (isInFreeSpins && state.expandingSymbol) {
+      // Calculate which reels have expanding symbol
+      const bonusResult = calculateBonusWins(
+        finalSymbols, 
+        state.expandingSymbol, 
+        state.lines, 
+        state.bet
+      );
+
+      if (bonusResult.expandedReels.length > 0) {
         // Start expanding animation
         setState(prev => ({ 
           ...prev, 
@@ -372,16 +429,16 @@ export function useGameState() {
           expandingAnimation: true,
           expandingReels: []
         }));
-        
+
         // Animate each reel expanding one by one
-        for (const reelIdx of reelsWithExpandingSymbol) {
-          await delay(300);
+        for (const reelIdx of bonusResult.expandedReels) {
+          await delay(350);
           
-          // Expand this reel - fill all 3 rows with expanding symbol
-          finalSymbols[reelIdx] = [state.expandingSymbol!, state.expandingSymbol!, state.expandingSymbol!];
+          // Fill entire column with expanding symbol
+          finalSymbols[reelIdx] = [state.expandingSymbol, state.expandingSymbol, state.expandingSymbol];
           
           setState(prev => {
-            const newReelSymbols = [...prev.reelSymbols.map(col => [...col])];
+            const newReelSymbols = prev.reelSymbols.map(col => [...col]);
             newReelSymbols[reelIdx] = [state.expandingSymbol!, state.expandingSymbol!, state.expandingSymbol!];
             
             return {
@@ -393,28 +450,35 @@ export function useGameState() {
           
           playSound('lineWin');
         }
-        
+
         await delay(400);
+
+        // Now calculate win based on expanded columns
+        totalWin = bonusResult.totalWin;
+        winningPositions = bonusResult.winningPositions;
+        bonusWinInfo = bonusResult.winInfo;
+
+        if (totalWin > 0) {
+          finalMessage = `DOBITAK: ${totalWin.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} HRK`;
+          newFreeSpinsWin += totalWin;
+          playSound('win');
+        }
+      }
+    } else {
+      // ============ NORMAL GAME LOGIC ============
+      const normalResult = calculateNormalWins(finalSymbols, state.lines, state.bet);
+      totalWin = normalResult.totalWin;
+      winningPositions = normalResult.winningPositions;
+      winningLines = normalResult.winningLines;
+
+      if (totalWin > 0) {
+        finalMessage = `DOBITAK: ${totalWin.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} HRK`;
+        playSound('win');
       }
     }
 
-    // Calculate wins from final symbol configuration
-    const { winningLines, winningPositions, totalWin } = calculateWins(finalSymbols, state.lines, state.bet);
-    
-    let finalMessage = message;
-    let finalCredit = newCredit;
-    let newFreeSpinsWin = state.freeSpinsWin;
-
-    if (totalWin > 0) {
-      finalCredit += totalWin;
-      finalMessage = `DOBITAK: ${totalWin.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} HRK`;
-      playSound('win');
-      
-      // Track free spins winnings
-      if (isInFreeSpins) {
-        newFreeSpinsWin += totalWin;
-      }
-    }
+    // Add win to credit
+    let finalCredit = newCredit + totalWin;
 
     // Check for bonus trigger (3+ books)
     bookCount = 0;
@@ -432,7 +496,7 @@ export function useGameState() {
       finalFreeSpins = 10;
       freeSpinsTotal = 10;
       showBonus = true;
-      newFreeSpinsWin = 0; // Reset bonus win counter
+      newFreeSpinsWin = 0;
       playSound('freeGames');
     } else if (bookCount >= 3 && isInFreeSpins) {
       // Retrigger - add 10 more free spins
@@ -459,17 +523,18 @@ export function useGameState() {
       winningLines,
       freeSpins: finalFreeSpins,
       freeSpinsTotal: showBonusEnd ? 0 : freeSpinsTotal,
-      freeSpinsWin: showBonusEnd ? newFreeSpinsWin : newFreeSpinsWin, // Keep for end screen
+      freeSpinsWin: newFreeSpinsWin,
       expandingSymbol: showBonus ? expandingSymbol : state.expandingSymbol,
       showBonus,
       showBonusEnd,
       lastWin: totalWin,
       spinningReels: Array(CONFIG.REELS).fill(false),
       fastSpin: false,
-      expandingReels: []
+      expandingReels: [],
+      bonusWinInfo
     });
 
-  }, [state, updateState, playSound, playReelStopSound, triggerFastSpin, calculateWins]);
+  }, [state, updateState, playSound, playReelStopSound, triggerFastSpin, calculateNormalWins, calculateBonusWins]);
 
   const startFreeSpins = useCallback(() => {
     updateState({ showBonus: false });
