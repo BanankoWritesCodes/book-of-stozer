@@ -2,10 +2,12 @@
 
 import Image from 'next/image';
 import { useEffect, useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
 import { SYMBOL_IMAGES, SYMBOL_NAMES, PAYOUTS, SYMBOLS, CONFIG, PAYLINES, SymbolType } from '@/lib/gameConfig';
 
 export default function SlotMachine() {
+  const router = useRouter();
   const { 
     state, 
     updateState, 
@@ -336,6 +338,16 @@ export default function SlotMachine() {
           ⚠️ PARODIJA - Ovo nije prava igra na sreću. Ne koristi se pravi novac. RTP: 90%
         </div>
       </div>
+
+      {/* Navigation to Roulette */}
+      <button 
+        className="nav-to-roulette"
+        onClick={() => router.push('/roulette')}
+        disabled={state.spinning || inFreeSpins}
+      >
+        <span className="nav-arrow">→</span>
+        <span className="nav-text">RULET</span>
+      </button>
 
       {/* Bonus Start Overlay - Custom Design */}
       {state.showBonus && (
