@@ -1,0 +1,181 @@
+/* ================================================
+   STOŽBET HOME PAGE
+   ================================================ */
+
+.home-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/stožbet-bg.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+.home-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.7) 75%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+}
+
+/* ============ MAIN ============ */
+.home-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+  padding-bottom: 80px;
+  position: relative;
+  z-index: 10;
+}
+
+.games-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 900px;
+}
+
+/* ============ GAME CARD ============ */
+.game-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.95), rgba(10, 10, 20, 0.98));
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-width: 260px;
+  backdrop-filter: blur(10px);
+}
+
+.game-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: #d4af37;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+}
+
+.game-card:active {
+  transform: scale(0.98);
+}
+
+.game-icon-wrap {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.game-svg-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.game-text {
+  flex: 1;
+  text-align: left;
+}
+
+.game-text h3 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin: 0 0 4px;
+  font-weight: bold;
+}
+
+.game-text span {
+  font-size: 0.7rem;
+  color: #d4af37;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.game-play-arrow {
+  font-size: 1.2rem;
+  color: #d4af37;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+
+.game-card:hover .game-play-arrow {
+  opacity: 1;
+  transform: translateX(5px);
+}
+
+/* ============ FOOTER ============ */
+.home-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  text-align: center;
+  z-index: 10;
+}
+
+.home-footer p {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .home-main {
+    padding: 15px;
+    padding-bottom: 70px;
+  }
+  
+  .games-row {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+  
+  .game-card {
+    min-width: unset;
+    width: 100%;
+    padding: 14px 18px;
+  }
+  
+  .game-icon-wrap {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .game-text h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .home-main {
+    padding-bottom: 60px;
+  }
+  
+  .game-card {
+    padding: 10px 14px;
+  }
+  
+  .game-icon-wrap {
+    width: 40px;
+    height: 40px;
+  }
+}
